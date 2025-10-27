@@ -1,0 +1,81 @@
+_target_: fgvc.models.plant_traits_model.PlantTraitModule
+# Add comments here
+cutmix_aug: False  # Whether to use CutMix augmentation
+reg_traits: True  # Whether to use regression for traits
+clf_traits: True  # Whether to use classification for traits
+bld_traits: True  # Whether to use bounding box regression for traits
+soft_clf_traits: True  # Whether to use soft classification for traits
+
+optimizer_fn:
+    _target_: fgvc.models.plant_traits_model.config_dino_yolo_optimizers
+    _partial_: True
+    # multiplier for the learning rate of the head and tokens
+    lr_mult: 0.8
+    # setup optimizer and scheduler for head, bld, blocks, and tokens
+    optimizers:
+      head:
+        _target_: torch.optim.AdamW
+        _partial_: true
+        lr: 0.0008
+        weight_decay: 0.01
+      bld:
+        _target_: torch.optim.AdamW
+        _partial_: true
+        lr: 0.0008
+        weight_decay: 0.01
+      blocks:
+        _target_: torch.optim.AdamW
+        _partial_: true
+        lr: 0.0008
+        weight_decay: 0.01
+      tokens:
+        _target_: torch.optim.AdamW
+        _partial_: true
+        lr: 0.0008
+        weight_decay: 0.01
+    schedulers:
+      head:
+        _target_: torch.optim.lr_scheduler.OneCycleLR
+        _partial_: true
+        max_lr: 1e-4
+        total_steps: &steps 120
+        pct_start: 0.2
+        anneal_strategy: 'cos'
+        div_factor: 1e1
+        final_div_factor: 1e1
+      bld:
+        _target_: torch.optim.lr_scheduler.OneCycleLR
+        _partial_: true
+        max_lr: 9e-5
+        total_steps: *steps
+        pct_start: 0.3
+        anneal_strategy: 'cos'
+        div_factor: 1e7
+        final_div_factor: 1e1
+      blocks:
+        _target_: torch.optim.lr_scheduler.OneCycleLR
+        _partial_: true
+        max_lr: 1e-4
+        total_steps: *steps
+        pct_start: 0.3
+        anneal_strategy: 'cos'
+        div_factor: 1e7
+        final_div_factor: 1e1
+      tokens:
+        _target_: torch.optim.lr_scheduler.OneCycleLR
+        _partial_: true
+        max_lr: 1e-4
+        total_steps: *steps
+        pct_start: 0.3
+        anneal_strategy: 'cos'
+        div_factor: 1e7
+        final_div_factor: 1e1
+
+# Define the model configuration
+model:
+  _target_: fgvc.models.plant_traits_model.PlantDINO
+  num_targets: 6  # Number of target traits
+  train_blocks: 6  # Number of blocks to train
+  train_tokens: True  # Whether to train tokens
+  body: "vitb"  # Backbone architecture
+  ckpt_path: "/home/ubuntu/FGVC11/data/PlantClef/pretrained_models/vit_base_patch14_reg4_dinov2_lvd142m_pc24_onlyclassifier_then_all/model_best.pth.tar"  # Path to the pre-trained model checkpoint

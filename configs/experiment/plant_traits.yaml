@@ -1,0 +1,48 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: plant_traits_data
+  - override /model: plant_traits_model
+  - override /callbacks: default
+  - override /trainer: gpu
+  - override /logger: neptune.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+description: "default"
+
+seed: 12345
+val_on: "val/reg_r2"
+
+trainer:
+  min_epochs: 10
+  max_epochs: 120
+  devices: [0,1,2,3] 
+  check_val_every_n_epoch: 1
+  precision: 16-mixed
+  strategy: ddp_find_unused_parameters_true
+
+data:
+  batch_size: 32
+  num_workers: 8
+
+logger:
+  neptune:
+    project: neptune/plant-traits
+
+callbacks:
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/checkpoints
+    filename: "epoch_{epoch:03d}"
+    monitor: ${val_on}  
+    mode: "max"
+    save_last: True
+    auto_insert_metric_name: False
+
+  early_stopping:
+    monitor: ${val_on}
+    patience: 10
+    mode: "max"

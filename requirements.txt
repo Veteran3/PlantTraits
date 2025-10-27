@@ -1,0 +1,45 @@
+albumentations
+black
+boto3
+opencv-python
+pandas
+randomname
+tenacity
+timm
+wandb
+tqdm
+
+# --------- dinov2 --------- #
+# --extra-index-url https://pypi.nvidia.com
+# cuml-cu11==23.12.0
+dinov2
+xformers
+
+# --------- pytorch --------- #
+# torch==2.0.0
+# torchvision==0.15.1
+# lightning @ git+https://github.com/Lightning-AI/lightning@1307b605e858560a1b93bfbbbbe039e5beb9e977#egg=lightning
+# torchmetrics==0.11.4
+
+# --------- hydra --------- #
+hydra-core
+hydra-colorlog
+hydra-optuna-sweeper
+
+# --------- loggers --------- #
+# wandb
+neptune==1.2.0
+# mlflow
+# comet-ml
+
+# --------- others --------- #
+pyrootutils     # standardizing the project root setup
+pre-commit      # hooks for applying linters on commit
+rich            # beautiful text formatting in terminal
+pytest          # tests
+sh              # for running bash commands in some tests
+pycocotools     # for masking
+ultralytics==8.0.158     # for yolo
+fiftyone
+fastapi
+umap-learn
